@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Banking System</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css} "/>
+</head>
+<body>
+<div th:replace="~{fragments/header::header}"></div>
+<div class="card">
+    <h3 class="card-header text-secondary text-center">Account Details</h3>
+    <div class="card-body">
+        <div class="account-info text-secondary text-center">
+            <p><strong>Account Owner:</strong> <span th:text="${account.name}"></span></p>
+            <p><strong>Balance:</strong> <span th:text="${account.balance}"></span></p>
+        </div>
+        <div class="action-buttons">
+            <div class="row">
+                <div class="col-6 mx-auto">
+                    <form class="d-flex align-items-center justify-content-evenly" action="#"
+                          th:action="@{/api/account/deposit/{id}(id=${account.id})}" method="post">
+                        <input type="hidden" name="accountId" value="${account.id}"/>
+                        <label for="depositAmount" class="input-label text-secondary">Deposit Amount</label>
+                        <input type="text" id="depositAmount" name="depositAmount" class="input-field"
+                               placeholder="Amount">
+                        <input type="submit" value="Deposit" class="btn btn-primary">
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 mx-auto mt-3">
+                    <form class="d-flex align-items-center justify-content-evenly" action="#" th:action="@{/api/account/withdraw/{id}(id=${account.id})}" method="post">
+                        <label for="withdrawAmount" class="input-label text-secondary">Withdraw Amount</label>
+                        <input type="text" id="withdrawAmount" name="withdrawAmount" class="input-field"
+                               placeholder="Amount">
+                        <input type="submit" value="Withdraw" class="btn btn-primary">
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8 mx-auto mt-3">
+                    <form class="d-flex align-items-center justify-content-evenly" action="#" th:action="@{/api/account/transfer/{id}(id=${account.id})}" method="post">
+                        <label for="transferAmount" class="input-label text-secondary">Transfer Amount</label>
+                        <input type="text" id="transferAmount" name="transferAmount" class="input-field"
+                               placeholder="Amount">
+                        <label for="recipientAccount" class="input-label text-secondary">Recipient Account Id</label>
+                        <input type="text" id="recipientAccount" name="recipientAccount" class="input-field"
+                               placeholder="Recipient Account Id">
+                        <input type="submit" value="Transfer" class="btn btn-primary">
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mx-auto mt-4">
+                    <div class="d-flex align-items-center justify-content-evenly">
+                        <a class="btn btn-outline-primary"
+                           th:href="@{/api/account/list}"
+                           role="button">Go Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer::footer}"></div>
+</body>
+</html>

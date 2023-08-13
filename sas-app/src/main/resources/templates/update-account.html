@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update account</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css} "/>
+</head>
+<body>
+<div th:replace="~{fragments/header::header}"></div>
+<div class="card">
+    <h3 class="card-header text-secondary text-center">Update account</h3>
+    <div class="card-body align-items-center d-flex justify-content-center">
+    <form action="#"
+          th:action="@{/api/account/update/{id}(id=${account.id})}"
+          th:object="${account}"
+          method="post">
+        <div class="input-group mt-4">
+            <span class="input-group-text">Account Owner</span>
+            <input type="text" th:field="*{name}" id="name" placeholder="Name" class="form-control" aria-label="name">
+            <ul>
+                <li th:each="err : ${#fields.errors('name')}" th:text="${err}" class="error text-danger"></li>
+            </ul>
+        </div>
+        <div class="input-group mt-4">
+            <input type="text" th:field="*{balance}" id="balance" placeholder="Balance" class="form-control" aria-label="balance">
+            <span class="input-group-text">EUR</span>
+            <ul>
+                <li th:each="err : ${#fields.errors('balance')}" th:text="${err}" class="error text-danger"></li>
+            </ul>
+        </div>
+        <div class="row">
+        <div class="col-12 mx-auto mt-4">
+            <div class="d-flex align-items-center justify-content-evenly">
+            <button type="submit" class="btn btn-primary">Update Account</button>
+            <a class="btn btn-outline-primary"
+               th:href="@{/api/account/list}"
+               role="button">Go Back</a>
+        </div>
+        </div>
+        </div>
+    </form>
+</div>
+</div>
+<div th:replace="~{fragments/footer::footer}"></div>
+</body>
+</html>

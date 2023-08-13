@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Account System</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+          integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
+</head>
+<body>
+<div th:replace="~{fragments/header::header}"></div>
+<div class="container">
+    <h2 class="text-center text-secondary mt-3">Accounts</h2>
+
+    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
+         role="alert">
+        [[${message}]]
+        <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="my-3">
+        <form th:action="@{/api/account/list}" id="searchForm">
+            <div class="row d-flex">
+                <div class="col-md-4 mt-3">
+                    <div class="search">
+                        <input id="name"
+                               type="search"
+                               name="name"
+                               th:value="${name}"
+                               required
+                               class="form-control text-secondary"
+                               placeholder="Enter account owner">
+                        <button type="submit" class="btn btn-secondary">Search</button>
+                    </div>
+                </div>
+                <div class="col-md-11 mt-2">
+                    <button id="btnClear" class="btn btn-outline-primary">Clear</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <a class="btn btn-primary mt-3 mb-3" href="/api/account/addaccount" role="button">Add a new account</a>
+
+    <div th:if="${accounts.size() > 0}">
+        <table class="table table-hover table-responsive-xl">
+            <thead class="table-header text-secondary">
+            <tr>
+                <th class="account-header">Account Id</th>
+                <th class="account-header">Account Owner</th>
+                <th class="account-header">Account Balance</th>
+                <th class="account-header">Details</th>
+                <th class="account-header">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="account : ${accounts}" class="account-row">
+                <td th:text="${account.id}" class="text-secondary"></td>
+                <td th:text="${account.name}" class="text-secondary account-name"></td>
+                <td th:text="${account.balance}" class="text-secondary"></td>
+                <td>    <a class="fa-regular fa-eye icon-dark"
+                           th:href="@{/api/account/details/{id}(id=${account.id})}"
+                           role="button"></a>
+                </td>
+                <td>
+                    <a class="fa-regular fa-pen-to-square icon-dark"
+                       th:href="@{/api/account/edit/{id}(id=${account.id})}"
+                       role="button"></a>
+                    &nbsp
+                    <a class="fa-regular fa-trash-can icon-dark btn-delete"
+                       th:href="@{/api/account/delete/{id}(id=${account.id})}"
+                       role="button" data-toggle="modal" data-target="#confirmModal"></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:unless="${accounts.size() > 0}">
+        <span class="text-danger">No Account found!</span>
+    </div>
+
+    <nav aria-label="Pagination" th:if="${totalPages > 0}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a th:replace="~{fragments/paging::paging(1, '<<', 'First Page')}"></a>
+            </li>
+            <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a th:replace="~{fragments/paging::paging(${currentPage - 1}, 'Prev', 'Previous Page')}"></a>
+            </li>
+            <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
+                <a class="page-link" href="#">...</a>
+            </li>
+            <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
+                th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
+                <a th:replace="~{fragments/paging::paging(${page}, ${page}, 'Page ' + ${page})}"></a>
+            </li>
+            <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
+                <a class="page-link" href="#">...</a>
+            </li>
+            <li class="page-item font-weight-bold" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a th:replace="~{fragments/paging::paging(${currentPage + 1},'Next', 'Next Page')}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a th:replace="~{fragments/paging :: paging(${totalPages}, '>>', 'Last Page')}"></a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="modal fade text-center" id="confirmModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-secondary">Confirm Account Deletion</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span id="confirmText" class="text-secondary"></span>
+                </div>
+                <div class="modal-footer">
+                    <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/footer::footer}"></div>
+</div>
+
+<script th:inline="javascript">
+
+$(document).ready(function () {
+    $(".btn-delete").on("click", function (e) {
+        e.preventDefault();
+        link = $(this);
+        var accountName = link.closest(".account-row").find(".account-name").text();
+        $("#yesBtn").attr("href", link.attr("href"));
+        $("#confirmText").html("Do you want to delete the Acount \<strong\>" + accountName + "\<\/strong\>?");
+        $("#confirmModal").modal("show");
+    });
+
+    $("#confirmModal").on("click", ".btn-secondary, .close", function () {
+        $("#confirmModal").modal('hide');
+    });
+
+    $("#btnClear").on("click", function (e) {
+        e.preventDefault();
+        $("#name").val("");
+        $("#searchForm").submit();
+    });
+});
+</script>
+
+</body>
+</html>
