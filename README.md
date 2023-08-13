@@ -1,12 +1,12 @@
 # account-app
-Simmple account app
+Simple Springboot with Thymeleaf account app
 
 ***
 ### Description
-Simple account app create, update, delete account, get all acounts, deposit, withdraw, trasnfer.
-This iplemetation has UI.
-Possibility make transfer via rest request to external bank API (no UI).
-The project is for learning purpose.  
+Simple account app to create, update, delete account, get all acounts, deposit, withdraw, trasnfer.  
+This implementation has UI.  
+Possibility make transfer via rest request to external bank API (no UI).  
+The project is for learning/practicing purpose.  
 
 ### Technology Stack
 Component         | Technology
